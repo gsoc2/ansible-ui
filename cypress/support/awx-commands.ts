@@ -19,11 +19,16 @@ import { Role } from '../../frontend/awx/interfaces/Role';
 import { Schedule } from '../../frontend/awx/interfaces/Schedule';
 import { Team } from '../../frontend/awx/interfaces/Team';
 import { User } from '../../frontend/awx/interfaces/User';
-import { WorkflowJobTemplate } from '../../frontend/awx/interfaces/WorkflowJobTemplate';
+import {
+  WorkflowJobTemplate,
+  WorkflowJobTemplateNode,
+} from '../../frontend/awx/interfaces/generated-from-swagger/api';
+import { Job } from '../../frontend/awx/interfaces/Job';
 import './auth';
 import './commands';
 import './rest-commands';
 //import { Credential } from '../../frontend/eda/interfaces/generated/eda-api';
+import { InventorySource } from '../../frontend/awx/interfaces/InventorySource';
 
 //  AWX related custom command implementation
 
@@ -762,6 +767,205 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add(
+  'createAwxWorkflowVisualizerJobTemplateNode',
+  (workflowJobTemplate: WorkflowJobTemplate, jobTemplateId: number) => {
+    cy.requestPost<WorkflowJobTemplateNode>(
+      `/api/v2/workflow_job_templates/${workflowJobTemplate?.id}/workflow_nodes/`,
+      {
+        unified_job_template: jobTemplateId,
+      }
+    );
+  }
+);
+
+// Cypress.Commands.add(
+//   'createAwxWorkflowVisualizerManagementNode',
+//   (workflowJobTemplateId: WorkflowJobTemplate, managementId: 1 | 2 | 3 | 4): number => {
+//     cy.requestPost<WorkflowJobTemplateNode>(
+//       `/api/v2/workflow_job_templates/${workflowJobTemplateId?.id}/workflow_nodes/`,
+//       {
+//         unified_job_template: managementId,
+//         scm_branch: null,
+//         limit: null,
+//         job_tags: null,
+//         skip_tags: null,
+//       }
+//     )
+//       //     ).then((workflowNodeResults) => {
+//       //       // return results.unified_job_template;
+//       .its('results')
+//       .then(
+//         (
+//           results: {
+//             summary_fields: {
+//               unified_job_template: { id: number };
+//             };
+//           }[]
+//         ) => {
+//           if (results.length > 0) {
+//             cy.log('RESULTS********', results[0].summary_fields.unified_job_template.id);
+//             return results[0].summary_fields.unified_job_template.id;
+//           }
+//           return '';
+//         }
+//       );
+//   }
+// );
+//  .then((status: string) => {
+//       if (workflowNodeResults) {
+//         const {
+//           summary_fields: {
+//             unified_job_template: { id: unifiedJobTemplateId },
+//           },
+//         } = workflowNodeResults;
+//         cy.log('RESULTS********', unifiedJobTemplateId);
+//         return unifiedJobTemplateId as number;
+//       }
+//     });
+//   }
+// );
+
+Cypress.Commands.add(
+  'createAwxWorkflowVisualizerManagementNode',
+  (workflowJobTemplateId: WorkflowJobTemplate, managementId: 1 | 2 | 3 | 4) => {
+    cy.requestPost<WorkflowJobTemplateNode>(
+      `/api/v2/workflow_job_templates/${workflowJobTemplateId?.id}/workflow_nodes/`,
+      {
+        unified_job_template: managementId,
+        scm_branch: null,
+        limit: null,
+        job_tags: null,
+        skip_tags: null,
+      }
+    ).then((workflowNodeResults) => {
+      return cy.wrap(workflowNodeResults);
+    });
+  }
+);
+
+Cypress.Commands.add(
+  'createAwxWorkflowVisualizerWJTNode',
+  (workflowJobTemplate: WorkflowJobTemplate) => {
+    cy.requestPost<WorkflowJobTemplateNode>(
+      `/api/v2/workflow_job_templates/${workflowJobTemplate?.id}/workflow_nodes/`,
+      {
+        unified_job_template: workflowJobTemplate?.id,
+        limit: null,
+        scm_branch: null,
+      }
+    );
+  }
+);
+
+Cypress.Commands.add(
+  'createAwxWorkflowVisualizerProjectNode',
+  function (workflowJobTemplate: WorkflowJobTemplate, project: Project) {
+    cy.requestPost<WorkflowJobTemplateNode>(
+      `/api/v2/workflow_job_templates/${workflowJobTemplate?.id}/workflow_nodes/`,
+      {
+        unified_job_template: project.id,
+        scm_branch: null,
+        limit: null,
+        job_tags: null,
+        skip_tags: null,
+      }
+    ).then((results) => {
+      //cy.log(results);
+      return results.id;
+    });
+  }
+);
+
+Cypress.Commands.add(
+  'createAwxWorkflowVisualizerInventorySourceNode',
+  function (workflowJobTemplate: WorkflowJobTemplate, inventorySource: InventorySource) {
+    cy.requestPost<WorkflowJobTemplateNode>(
+      `/api/v2/workflow_job_templates/${workflowJobTemplate?.id}/workflow_nodes/`,
+      {
+        unified_job_template: inventorySource.id,
+        scm_branch: null,
+        limit: null,
+        job_tags: null,
+        skip_tags: null,
+      }
+    );
+  }
+);
+
+Cypress.Commands.add(
+  'createWorkflowJTSuccessNodeLink',
+  function (workflowNodeID: number, workflowNodeResults: Array[]) {
+    if (workflowNodeResults) {
+      const {
+        summary_fields: {
+          unified_job_template: { id: unifiedJobTemplateId },
+        },
+      } = workflowNodeResults;
+      cy.requestPost<WorkflowJobTemplateNode>(
+        `/api/v2/workflow_job_template_nodes/${workflowNodeID}/success_nodes/`,
+        {
+          unified_job_template: unifiedJobTemplateId as number,
+          scm_branch: null,
+          limit: null,
+          job_tags: null,
+          skip_tags: null,
+          diff_mode: null,
+        }
+      );
+    }
+  }
+);
+
+// Cypress.Commands.add(
+//   'createWorkflowJTSuccessNodeLink',
+//   function (workflowNodeID: number, unifiedJobTemplateId: number) {
+//     // if (workflowNodeResults) {
+//     //   const {
+//     //     summary_fields: {
+//     //       unified_job_template: { id: unifiedJobTemplateId },
+//     //     },
+//     //   } = workflowNodeResults;
+//     cy.requestPost<WorkflowJobTemplateNode>(
+//       `/api/v2/workflow_job_template_nodes/${workflowNodeID}/success_nodes/`,
+//       {
+//         unified_job_template: unifiedJobTemplateId,
+//         scm_branch: null,
+//         limit: null,
+//         job_tags: null,
+//         skip_tags: null,
+//         diff_mode: null,
+//       }
+//     );
+//   }
+//   //}
+// );
+
+// Cypress.Commands.add(
+//   'createWorkflowJTSuccessNodeLink',
+//   function (workflowNodeResults: WorkflowJobTemplateNode) {
+//     if (workflowNodeResults) {
+//       const {
+//         summary_fields: {
+//           unified_job_template: { id: unifiedJobTemplateId },
+//         },
+//       } = workflowNodeResults;
+
+//       cy.requestPost<WorkflowJobTemplateNode>(
+//         `/api/v2/workflow_job_template_nodes/${workflowNodeResults?.id}/success_nodes/`,
+//         {
+//           unified_job_template: unifiedJobTemplateId as number,
+//           scm_branch: null,
+//           limit: null,
+//           job_tags: null,
+//           skip_tags: null,
+//           diff_mode: null,
+//         }
+//       );
+//     }
+//   }
+// );
 
 Cypress.Commands.add('getAwxWorkflowJobTemplateByName', (awxWorkflowJobTemplateName: string) => {
   cy.awxRequestGet<AwxItemsResponse<WorkflowJobTemplate>>(

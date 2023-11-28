@@ -84,7 +84,7 @@
         "workflow_job_template": { "id": 386, "name": "a_simple_3_node_wf", "description": "" },
         "unified_job_template": {
           "id": 128,
-          "name": "1",
+          "name": "E2E Inventory 1QJZ",
           "description": "",
           "unified_job_type": "job"
         }

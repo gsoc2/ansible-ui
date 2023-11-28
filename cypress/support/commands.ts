@@ -383,6 +383,35 @@ declare global {
       createAwxWorkflowJobTemplate(
         workflowJobTemplate: Partial<WorkflowJobTemplate>
       ): Chainable<WorkflowJobTemplate>;
+
+      createAwxWorkflowVisualizerJobTemplateNode(
+        workflowJT: WorkflowJobTemplate,
+        jobTemplateId: number
+      ): Chainable<WorkflowJobTemplate>;
+
+      createAwxWorkflowVisualizerProjectNode(
+        workflowJT: WorkflowJobTemplate,
+        project: Project
+      ): Chainable<WorkflowJobTemplate>;
+
+      createAwxWorkflowVisualizerInventorySourceNode(
+        workflowJT: WorkflowJobTemplate,
+        inventorySourceId: InventorySource
+      ): Chainable<WorkflowJobTemplate>;
+
+      createAwxWorkflowVisualizerWJTNode(
+        workflowJT: WorkflowJobTemplate
+      ): Chainable<WorkflowJobTemplate>;
+
+      createAwxWorkflowVisualizerManagementNode(
+        workflowJT: WorkflowJobTemplate,
+        managementId: 1 | 2 | 3 | 4
+      ): Chainable<WorkflowJobTemplate>;
+
+      createWorkflowJTSuccessNodeLink(
+        workflowNode: WorkflowJobTemplateNode,
+        workflowNodeResults: Array[]
+      ): Chainable<WorkflowJobTemplate>;
       /**
        * This command creates a job template with specific variables that will work in conjunction with
        * an EDA project and rulebook activation.
