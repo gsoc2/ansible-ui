@@ -31,10 +31,11 @@ export const CustomNode: FC<
   CustomNodeProps & WithContextMenuProps & WithSelectionProps & WithDragNodeProps
 > = ({ element, contextMenuOpen, onContextMenu, onSelect, selected, ...rest }) => {
   const data = element.getData();
+  const jobType = data && data.resource.summary_fields.unified_job_template.unified_job_type;
 
-  if (!data || !data.jobType) return null;
+  if (!data || !jobType) return null;
 
-  const Icon = NodeIcon[data.jobType];
+  const Icon = NodeIcon[jobType];
 
   return (
     <DefaultNode
