@@ -64,35 +64,14 @@ export function useHubNavigation() {
             element: <HubNamespacePage />,
             children: [
               {
-                id: HubRoute.CreateNamespace,
-                path: 'create',
-                element: <CreateHubNamespace />,
+                id: HubRoute.NamespaceDetails,
+                path: 'details',
+                element: <HubNamespaceDetails />,
               },
               {
-                id: HubRoute.EditNamespace,
-                path: ':id',
-                element: <EditHubNamespace />,
-              },
-              {
-                id: HubRoute.NamespacePage,
-                path: ':id',
-                element: <HubNamespacePage />,
-                children: [
-                  {
-                    id: HubRoute.NamespaceDetails,
-                    path: 'details',
-                    element: <HubNamespaceDetails />,
-                  },
-                  {
-                    id: HubRoute.NamespaceCLI,
-                    path: 'cli',
-                    element: <HubNamespaceCLI />,
-                  },
-                  {
-                    path: '',
-                    element: <Navigate to="details" />,
-                  },
-                ],
+                id: HubRoute.NamespaceCLI,
+                path: 'cli',
+                element: <HubNamespaceCLI />,
               },
               {
                 path: '',
