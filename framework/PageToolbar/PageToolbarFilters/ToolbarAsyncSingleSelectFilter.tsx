@@ -6,7 +6,7 @@ import {
 import { ToolbarFilterCommon } from './ToolbarFilterCommon';
 
 /** A function to open a single selection browse modal for a toolbar filter. */
-type ToolbarOpenSingleSelectBrowse = (
+export type OpenSingleSelectBrowse = (
   onSelect: (value: string) => void,
   defaultSelection?: string
 ) => void;
@@ -24,7 +24,7 @@ export interface IToolbarAsyncSingleSelectFilter extends ToolbarFilterCommon {
   queryErrorText?: PageAsyncQueryErrorTextType;
 
   /** The function to open the browse modal. */
-  openBrowse?: ToolbarOpenSingleSelectBrowse;
+  openBrowse?: OpenSingleSelectBrowse;
 
   /**
    * Whether the select required an option to be selected.
@@ -46,14 +46,14 @@ export interface IToolbarAsyncSingleSelectFilter extends ToolbarFilterCommon {
  * @param objectFn Function to create an object from the key. Used for default selection in the dialog.
  * @returns A function to open the select dialog.
  */
-export function toolbarSingleSelectBrowseAdapter<T>(
+export function singleSelectBrowseAdapter<T>(
   /** The function to open the original select dialog that uses objects. */
   selectFn: (onItemSelect: (itemValue: T) => void, itemDefaultSelection?: T) => void,
   /** The function to get a unique key from the object. Used as the string value in the toolbar filter values and query string. */
   keyFn: (item: T) => string,
   /** The function to create an object from the key. Used for default selection in the dialog. */
   objectFn: (name: string) => object
-): ToolbarOpenSingleSelectBrowse {
+): OpenSingleSelectBrowse {
   return (onSelect: (value: string) => void, defaultSelection?: string) => {
     selectFn(
       (item: T) => onSelect(keyFn(item)),
