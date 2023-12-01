@@ -6,7 +6,7 @@ import { PageAsyncQueryErrorTextType } from '../../PageInputs/PageAsyncSingleSel
 import { ToolbarFilterCommon } from './ToolbarFilterCommon';
 
 /** A function to open a single selection browse modal for a toolbar filter. */
-export type OpenMultiSelectBrowse = (
+type ToolbarOpenMultiSelectBrowse = (
   onSelect: (values: string[]) => void,
   defaultSelections?: string[]
 ) => void;
@@ -24,7 +24,7 @@ export interface IToolbarAsyncMultiSelectFilter extends ToolbarFilterCommon {
   queryErrorText?: PageAsyncQueryErrorTextType;
 
   /** The function to open the browse modal. */
-  openBrowse?: OpenMultiSelectBrowse;
+  openBrowse?: ToolbarOpenMultiSelectBrowse;
 
   /**
    * Whether the select required an option to be selected.
@@ -53,7 +53,7 @@ export function multiSelectBrowseAdapter<T>(
   keyFn: (item: T) => string,
   /** The function to create an object from the key. Used for default selection in the dialog. */
   objectFn: (name: string) => object
-): OpenMultiSelectBrowse {
+): ToolbarOpenMultiSelectBrowse {
   return (onSelect: (value: string[]) => void, defaultSelections?: string[]) => {
     selectFn(
       (items: T[]) => onSelect(items.map((item) => keyFn(item))),

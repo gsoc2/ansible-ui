@@ -11,7 +11,14 @@ import {
 import { useHubView } from '../../useHubView';
 import { hubAPI } from '../../api/formatPath';
 
-function useParameters(): AsyncSelectFilterBuilderProps<CollectionVersionSearch> {
+type collectionVersionSelectorParams = {
+  namespace: string;
+  repository: string;
+  collection: string;
+};
+function useParameters(
+  params: collectionVersionSelectorParams
+): AsyncSelectFilterBuilderProps<CollectionVersionSearch> {
   const tableColumns = useCollectionVersionColumns();
   const toolbarFilters = useCollectionVersionFilters();
   const { t } = useTranslation();
@@ -26,6 +33,11 @@ function useParameters(): AsyncSelectFilterBuilderProps<CollectionVersionSearch>
       toolbarFilters,
       tableColumns,
       disableQueryString: true,
+      queryParams: {
+        name: params.collection,
+        namespace: params.namespace,
+        repository_name: params.repository,
+      },
       keyFn: (item) =>
         item?.collection_version?.name +
         '_' +
@@ -36,16 +48,16 @@ function useParameters(): AsyncSelectFilterBuilderProps<CollectionVersionSearch>
   };
 }
 
-export function useSelectCollectionVersionMulti() {
-  const params = useParameters();
+export function useSelectCollectionVersionMulti(params: collectionVersionSelectorParams) {
+  const params2 = useParameters(params);
 
-  return useAsyncMultiSelectFilterBuilder<CollectionVersionSearch>(params);
+  return useAsyncMultiSelectFilterBuilder<CollectionVersionSearch>(params2);
 }
 
-export function useSelectCollectionVersionSingle() {
-  const params = useParameters();
+export function useSelectCollectionVersionSingle(params: collectionVersionSelectorParams) {
+  const params2 = useParameters(params);
 
-  return useAsyncSingleSelectFilterBuilder<CollectionVersionSearch>(params);
+  return useAsyncSingleSelectFilterBuilder<CollectionVersionSearch>(params2);
 }
 
 export function useCollectionVersionColumns(_options?: {

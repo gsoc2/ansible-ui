@@ -72,6 +72,8 @@ import { usePageNavigate } from '../../../framework';
 import { useRepositoryBasePath } from '../api/utils';
 import { requestGet } from '../../common/crud/Data';
 import { useCallback } from 'react';
+import { useSelectCollectionVersionSingle } from './hooks/useCollectionVersionSelector';
+import { singleSelectBrowseAdapter } from '../../../framework/PageToolbar/PageToolbarFilters/ToolbarAsyncSingleSelectFilter';
 
 export function CollectionDetails() {
   const { t } = useTranslation();
@@ -84,6 +86,22 @@ export function CollectionDetails() {
 
   // load collection by search params
   const version = searchParams.get('version');
+
+  const singleSelector = useSelectCollectionVersionSingle({
+    collection: name,
+    namespace,
+    repository,
+  });
+
+  const singleSelectorBrowser = singleSelectBrowseAdapter<CollectionVersionSearch>(
+    singleSelector.onBrowse,
+    (item) => {
+      return item.collection_version?.version || '';
+    },
+    (name) => {
+      return { collection_version: { version: name } };
+    }
+  );
 
   /*const collectionsRequest = useGet<HubItemsResponse<CollectionVersionSearch>>(
     hubAPI`/v3/plugin/ansible/search/collection-versions/?name=${name || ''}&namespace=${
@@ -215,13 +233,11 @@ export function CollectionDetails() {
             <PageAsyncSingleSelect<string>
               queryOptions={queryOptions}
               onSelect={(item: string) => {
-                /*const found = collections?.find(
-                  (item2 : CollectionVersionSearch) => item2.collection_version?.version === item
-                );*/
                 setVersionParams(item);
               }}
               placeholder={''}
               value={collection?.collection_version?.version || ''}
+              openBrowse={singleSelectorBrowser}
             />
             {collection?.collection_version &&
               t('Last updated') +
