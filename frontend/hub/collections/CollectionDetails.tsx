@@ -64,12 +64,14 @@ import { HubRoute } from '../HubRoutes';
 import { hubAPI } from '../api/formatPath';
 import { HubItemsResponse } from '../useHubView';
 import { PageSingleSelect } from './../../../framework/PageInputs/PageSingleSelect';
+import { PageAsyncSingleSelect } from '../../../framework/PageInputs/PageAsyncSingleSelect';
 import { CollectionVersionSearch } from './Collection';
 import { useCollectionActions } from './hooks/useCollectionActions';
 import { useCollectionColumns } from './hooks/useCollectionColumns';
 import { usePageNavigate } from '../../../framework';
 import { useRepositoryBasePath } from '../api/utils';
 import { requestGet } from '../../common/crud/Data';
+import { useCallback } from 'react';
 
 export function CollectionDetails() {
   const { t } = useTranslation();
@@ -83,16 +85,15 @@ export function CollectionDetails() {
   // load collection by search params
   const version = searchParams.get('version');
 
-  const collectionsRequest = useGet<HubItemsResponse<CollectionVersionSearch>>(
+  /*const collectionsRequest = useGet<HubItemsResponse<CollectionVersionSearch>>(
     hubAPI`/v3/plugin/ansible/search/collection-versions/?name=${name || ''}&namespace=${
       namespace || ''
     }&repository_name=${repository || ''}&order_by=-version`
-  );
+  );*/
 
-  const collections = collectionsRequest.data?.data;
+  //const collections = collectionsRequest.data?.data;
 
   let queryFilter = '';
-
   if (!version) {
     // for unspecified version, load highest
     queryFilter = '&is_highest=true';
@@ -123,7 +124,7 @@ export function CollectionDetails() {
 
   const getPageUrl = useGetPageUrl();
 
-  if (redirectIfEmpty) {
+  /*if (redirectIfEmpty) {
     const newParams = new URLSearchParams(searchParams.toString());
 
     // Set a new query parameter or update existing ones
@@ -146,7 +147,49 @@ export function CollectionDetails() {
 
   if (!collectionsRequest.data || !collectionRequest.data) {
     return <LoadingPage breadcrumbs tabs />;
-  }
+  }*/
+
+  // load collection versions
+  const queryOptions = useCallback(
+    (page: number) => {
+      const pageSize = 10;
+
+      async function load() {
+        const data = await requestGet<HubItemsResponse<CollectionVersionSearch>>(
+          hubAPI`/v3/plugin/ansible/search/collection-versions/?name=${name || ''}&namespace=${
+            namespace || ''
+          }&repository_name=${repository || ''}&order_by=-version&offset=${(
+            pageSize *
+            (page - 1)
+          ).toString()}&limit=${pageSize.toString()}`
+        );
+
+        return {
+          total: data.meta.count,
+          options: data.data.map((item) => {
+            let label =
+              item.collection_version?.version +
+              ' ' +
+              t('updated') +
+              ' ' +
+              `${DateTime.fromISO(item.collection_version?.pulp_created || '').toRelative()} (${
+                item.is_signed ? t('signed') : t('unsigned')
+              })`;
+            if (item.is_highest) {
+              label += ' (' + t('latest') + ')';
+            }
+            return {
+              value: item.collection_version?.version || '',
+              label,
+            };
+          }),
+        };
+      }
+
+      return load();
+    },
+    [requestGet]
+  );
 
   return (
     <PageLayout>
@@ -169,35 +212,13 @@ export function CollectionDetails() {
         footer={
           <div style={{ display: 'flex', alignItems: 'center', gridGap: '8px' }}>
             {t('Version')}
-            <PageSingleSelect<string>
-              options={
-                collections
-                  ? collections.map((item) => {
-                      let label =
-                        item.collection_version?.version +
-                        ' ' +
-                        t('updated') +
-                        ' ' +
-                        `${DateTime.fromISO(
-                          item.collection_version?.pulp_created || ''
-                        ).toRelative()} (${item.is_signed ? t('signed') : t('unsigned')})`;
-                      if (item.is_highest) {
-                        label += ' (' + t('latest') + ')';
-                      }
-                      return {
-                        value: item.collection_version?.version || '',
-                        label,
-                      };
-                    })
-                  : []
-              }
+            <PageAsyncSingleSelect<string>
+              queryOptions={queryOptions}
               onSelect={(item: string) => {
-                const found = collections?.find(
-                  (item2) => item2.collection_version?.version === item
-                );
-                if (found && found.collection_version) {
-                  setVersionParams(found.collection_version?.version);
-                }
+                /*const found = collections?.find(
+                  (item2 : CollectionVersionSearch) => item2.collection_version?.version === item
+                );*/
+                setVersionParams(item);
               }}
               placeholder={''}
               value={collection?.collection_version?.version || ''}
