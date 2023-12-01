@@ -36,13 +36,13 @@ function useParameters(): AsyncSelectFilterBuilderProps<CollectionVersionSearch>
   };
 }
 
-export function useSelectRepositoryMulti() {
+export function useSelectCollectionVersionMulti() {
   const params = useParameters();
 
   return useAsyncMultiSelectFilterBuilder<CollectionVersionSearch>(params);
 }
 
-export function useSelectRepositorySingle() {
+export function useSelectCollectionVersionSingle() {
   const params = useParameters();
 
   return useAsyncSingleSelectFilterBuilder<CollectionVersionSearch>(params);
