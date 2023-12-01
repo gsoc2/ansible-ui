@@ -38,12 +38,9 @@ function useParameters(
         namespace: params.namespace,
         repository_name: params.repository,
       },
-      keyFn: (item) =>
-        item?.collection_version?.name +
-        '_' +
-        item?.collection_version?.namespace +
-        '_' +
-        item?.repository?.name,
+      keyFn: (item) => {
+        return item?.collection_version?.version || '';
+      },
     },
   };
 }

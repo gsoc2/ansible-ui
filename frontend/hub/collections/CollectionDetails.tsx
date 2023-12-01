@@ -63,7 +63,6 @@ import { useGet } from '../../common/crud/useGet';
 import { HubRoute } from '../HubRoutes';
 import { hubAPI } from '../api/formatPath';
 import { HubItemsResponse } from '../useHubView';
-import { PageSingleSelect } from './../../../framework/PageInputs/PageSingleSelect';
 import { PageAsyncSingleSelect } from '../../../framework/PageInputs/PageAsyncSingleSelect';
 import { CollectionVersionSearch } from './Collection';
 import { useCollectionActions } from './hooks/useCollectionActions';
@@ -142,19 +141,19 @@ export function CollectionDetails() {
 
   const getPageUrl = useGetPageUrl();
 
-  /*if (redirectIfEmpty) {
+  if (redirectIfEmpty) {
     const newParams = new URLSearchParams(searchParams.toString());
 
     // Set a new query parameter or update existing ones
     newParams.set('redirectIfEmpty', '');
-
-    if (collections && collections?.length === 0) {
+    if (!collection) {
       navigate(HubRoute.Collections);
     } else {
       navigate(HubRoute.CollectionPage, { query: { name, namespace, repository } });
     }
   }
 
+  /*
   if (collectionsRequest.error || collections?.length === 0) {
     return <HubError error={collectionsRequest.error} handleRefresh={collectionsRequest.refresh} />;
   }
@@ -236,7 +235,7 @@ export function CollectionDetails() {
                 setVersionParams(item);
               }}
               placeholder={''}
-              value={collection?.collection_version?.version || ''}
+              value={collection?.collection_version?.version || version || ''}
               openBrowse={singleSelectorBrowser}
             />
             {collection?.collection_version &&
